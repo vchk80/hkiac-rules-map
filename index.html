@@ -135,7 +135,9 @@ body.js .nojs{display:none;}
 a.art:hover{background:var(--accent);color:var(--on-accent);border-color:var(--accent);}
 body.js .artgrp .art{border-radius:2px 0 0 2px;}
 .art .ext{font-family:Arial,Helvetica,sans-serif;font-size:10px;margin-left:4px;opacity:.75;}
-.art.hit{box-shadow:0 0 0 2px var(--accent);}
+.art.hit{box-shadow:0 0 0 2px var(--accent);scroll-margin-top:110px;}
+.art.hit.current{background:var(--accent);color:var(--on-accent);border-color:var(--accent);}
+.art.sch.hit.current{background:var(--sch);color:var(--on-accent);border-color:var(--sch);}
 .art.sch{color:var(--sch);background:var(--sch-soft);border-color:var(--sch-line);}
 a.art.sch:hover{background:var(--sch);color:var(--on-accent);border-color:var(--sch);}
 .artgrp:has(.art.sch) button.xref{border-color:var(--sch-line);}
@@ -504,8 +506,6 @@ footer a{color:var(--accent);}
       p.normalize();
     });
   }
-  function esc(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
-
   /* "schedule 4" should also find "Sch 4"; "article 27" should find "Art 27" */
   function terms(q){
     var out = [q];
@@ -518,27 +518,58 @@ footer a{color:var(--accent);}
     return out;
   }
 
-  function mark(root, re){
+  function looksNumeric(q){ return /^[0-9]/.test(q); }
+
+  /* A numeric query must not start mid-number: searching 1.4 should not
+     match inside 41.4, but should still match 1.4 and 1.41. */
+  function okBoundary(text, at, numeric){
+    if (!numeric || at === 0) return true;
+    var prev = text.charAt(at - 1);
+    return !(prev >= '0' && prev <= '9') && prev !== '.';
+  }
+
+  /* Finds the earliest occurrence of any term at or after `from`. */
+  function findNext(text, tl, numeric, from){
+    var best = -1, bestLen = 0;
+    for (var i = 0; i < tl.length; i++){
+      var t = tl[i];
+      if (!t) continue;
+      var at = from;
+      while (true){
+        at = text.indexOf(t, at);
+        if (at === -1) break;
+        if (okBoundary(text, at, numeric)) break;
+        at += 1;
+      }
+      if (at !== -1 && (best === -1 || at < best || (at === best && t.length > bestLen))){
+        best = at; bestLen = t.length;
+      }
+    }
+    return best === -1 ? null : { at: best, len: bestLen };
+  }
+
+  function textHas(text, tl, numeric){
+    return findNext(text, tl, numeric, 0) !== null;
+  }
+
+  function mark(root, tl, numeric){
     var hits = 0, nodes = [], n;
     var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
     while ((n = w.nextNode())) nodes.push(n);
     nodes.forEach(function(node){
-      if (node.parentNode && node.parentNode.closest && node.parentNode.closest('.art')) return;
-      var t = node.nodeValue;
-      re.lastIndex = 0;
-      if (!re.test(t)) return;
-      re.lastIndex = 0;
-      var frag = document.createDocumentFragment(), last = 0, m;
-      while ((m = re.exec(t)) !== null){
-        if (m[0].length === 0){ re.lastIndex++; continue; }
-        if (m.index > last) frag.appendChild(document.createTextNode(t.slice(last, m.index)));
+      var raw = node.nodeValue;
+      var low = raw.toLowerCase();
+      if (!textHas(low, tl, numeric)) return;
+      var frag = document.createDocumentFragment(), last = 0, hit;
+      while ((hit = findNext(low, tl, numeric, last)) !== null){
+        if (hit.at > last) frag.appendChild(document.createTextNode(raw.slice(last, hit.at)));
         var el = document.createElement('mark');
-        el.textContent = m[0];
+        el.textContent = raw.substr(hit.at, hit.len);
         frag.appendChild(el);
-        last = m.index + m[0].length;
+        last = hit.at + hit.len;
         hits++;
       }
-      if (last < t.length) frag.appendChild(document.createTextNode(t.slice(last)));
+      if (last < raw.length) frag.appendChild(document.createTextNode(raw.slice(last)));
       node.parentNode.replaceChild(frag, node);
     });
     return hits;
@@ -548,15 +579,10 @@ footer a{color:var(--accent);}
     var q = input.value.trim();
     var ql = q.toLowerCase();
     var tl = q ? terms(ql) : [];
-    var re = q ? new RegExp(tl.map(esc).join('|'), 'gi') : null;
+    var numeric = q ? looksNumeric(ql) : false;
     var shown = 0, hits = 0;
 
-    function has(text){
-      for (var i = 0; i < tl.length; i++){
-        if (text.indexOf(tl[i]) !== -1) return true;
-      }
-      return false;
-    }
+    function has(text){ return !!q && textHas(text, tl, numeric); }
 
     clearMarks();
 
@@ -570,15 +596,15 @@ footer a{color:var(--accent);}
       if (!ok) return;
       shown++;
       if (ql) row.open = inBody;
-      if (re){
+      if (q){
         ['.cat strong','.covers','.time'].forEach(function(sel){
           var el = head.querySelector(sel);
-          if (el) hits += mark(el, re);
+          if (el) hits += mark(el, tl, numeric);
         });
         /* mark the body whether or not it is open; hidden marks are filtered
            out of the jump list until the row is expanded */
         Array.prototype.forEach.call(body.querySelectorAll('li, h4'), function(el){
-          hits += mark(el, re);
+          hits += mark(el, tl, numeric);
         });
       }
     });
@@ -591,7 +617,7 @@ footer a{color:var(--accent);}
         if (hit){
           any = true;
           var t = li.querySelector('.txt');
-          if (re && t) hits += mark(t, re);
+          if (q && t) hits += mark(t, tl, numeric);
         }
       });
       s.hidden = !any;
@@ -599,12 +625,15 @@ footer a{color:var(--accent);}
 
     Array.prototype.forEach.call(document.querySelectorAll('.art'), function(chip){
       var ref = (chip.getAttribute('data-ref') || '').toLowerCase();
-      chip.classList.toggle('hit', !!ql && has(ref));
+      var on = !!q && has(ref);
+      chip.classList.toggle('hit', on);
+      if (on) hits++;
     });
 
     empty.style.display = shown === 0 ? 'block' : 'none';
     if (!ql) count.textContent = rows.length + ' categories';
     else count.textContent = shown + ' of ' + rows.length + ' categories';
+    void hits;
 
     collectMatches();
   }
@@ -613,7 +642,7 @@ footer a{color:var(--accent);}
   var matches = [], cursor = -1;
 
   function collectMatches(){
-    matches = Array.prototype.slice.call(document.querySelectorAll('mark'))
+    matches = Array.prototype.slice.call(document.querySelectorAll('mark, .art.hit'))
       .filter(function(m){ return m.offsetParent !== null; });
     cursor = matches.length ? 0 : -1;
     nav.hidden = matches.length === 0;
@@ -623,6 +652,7 @@ footer a{color:var(--accent);}
 
   function paint(scroll){
     matches.forEach(function(m, i){ m.classList.toggle('current', i === cursor); });
+    if (cursor >= 0 && matches[cursor]) matches[cursor].setAttribute('aria-current', 'true');
     navCount.textContent = (matches.length ? (cursor + 1) : 0) + '/' + matches.length;
     if (scroll && cursor >= 0){
       var el = matches[cursor];
