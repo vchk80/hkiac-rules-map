@@ -84,6 +84,15 @@ body.js .controls{display:block;}
 input[type="search"]{flex:1 1 230px;min-width:0;font-family:"Times New Roman",Times,serif;
   font-size:16px;padding:10px 12px;border:1px solid var(--rule);border-radius:2px;
   background:var(--surface);color:var(--ink);}
+.nav{display:inline-flex;align-items:stretch;border:1px solid var(--rule);
+  border-radius:2px;background:var(--surface);overflow:hidden;flex:none;}
+.navbtn{font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1;
+  background:none;border:none;color:var(--ink-soft);padding:0 11px;}
+.navbtn:hover:not(:disabled){background:var(--accent);color:var(--on-accent);}
+.navbtn:disabled{color:var(--muted);opacity:.4;cursor:default;}
+.navcount{display:flex;align-items:center;padding:0 9px;color:var(--muted);
+  border-left:1px solid var(--rule);border-right:1px solid var(--rule);
+  font-size:10.5px;white-space:nowrap;min-width:54px;justify-content:center;}
 .clearbtn{font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:.08em;
   text-transform:uppercase;background:none;border:1px solid var(--rule);border-radius:2px;
   color:var(--muted);padding:9px 11px;}
@@ -191,7 +200,9 @@ ol.seq li:last-child{margin-bottom:0;}
 ol.seq b{color:var(--ink);font-weight:700;}
 .cols ol.seq{break-inside:avoid;}
 
-mark{background:var(--mark);color:var(--mark-ink);padding:0 1px;border-radius:2px;}
+mark{background:var(--mark);color:var(--mark-ink);padding:0 1px;border-radius:2px;
+  scroll-margin-top:110px;}
+mark.current{outline:2px solid var(--accent);outline-offset:1px;font-weight:700;}
 
 .handoff{margin:6px 0 0 30px;padding:12px 14px;border-left:2px solid var(--accent);
   background:var(--surface);color:var(--ink-soft);font-size:14.5px;max-width:72ch;}
@@ -244,6 +255,11 @@ footer a{color:var(--accent);}
   <div class="controls">
     <div class="searchrow">
       <input type="search" id="filter" placeholder="Search, e.g. joinder, deposit, 27.6" aria-label="Search">
+      <span class="nav" id="nav" hidden>
+        <button class="navbtn" id="prevBtn" type="button" aria-label="Previous match" title="Previous match">↑</button>
+        <span class="navcount label" id="navCount">0/0</span>
+        <button class="navbtn" id="nextBtn" type="button" aria-label="Next match" title="Next match">↓</button>
+      </span>
       <button class="clearbtn" id="clearBtn" type="button">Clear</button>
       <span class="count label" id="count"></span>
     </div>
@@ -559,11 +575,11 @@ footer a{color:var(--accent);}
           var el = head.querySelector(sel);
           if (el) hits += mark(el, re);
         });
-        if (row.open){
-          Array.prototype.forEach.call(body.querySelectorAll('li, h4'), function(el){
-            hits += mark(el, re);
-          });
-        }
+        /* mark the body whether or not it is open; hidden marks are filtered
+           out of the jump list until the row is expanded */
+        Array.prototype.forEach.call(body.querySelectorAll('li, h4'), function(el){
+          hits += mark(el, re);
+        });
       }
     });
 
@@ -588,8 +604,54 @@ footer a{color:var(--accent);}
 
     empty.style.display = shown === 0 ? 'block' : 'none';
     if (!ql) count.textContent = rows.length + ' categories';
-    else count.textContent = shown + ' of ' + rows.length + ' categories' + (hits ? ' \u00b7 ' + hits + ' highlighted' : '');
+    else count.textContent = shown + ' of ' + rows.length + ' categories';
+
+    collectMatches();
   }
+
+  /* ---- jump between highlighted matches ---- */
+  var matches = [], cursor = -1;
+
+  function collectMatches(){
+    matches = Array.prototype.slice.call(document.querySelectorAll('mark'))
+      .filter(function(m){ return m.offsetParent !== null; });
+    cursor = matches.length ? 0 : -1;
+    nav.hidden = matches.length === 0;
+    prevBtn.disabled = nextBtn.disabled = matches.length < 1;
+    paint(false);
+  }
+
+  function paint(scroll){
+    matches.forEach(function(m, i){ m.classList.toggle('current', i === cursor); });
+    navCount.textContent = (matches.length ? (cursor + 1) : 0) + '/' + matches.length;
+    if (scroll && cursor >= 0){
+      var el = matches[cursor];
+      var row = el.closest ? el.closest('details.row') : null;
+      if (row && !row.open) row.open = true;
+      el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }
+
+  function step(delta){
+    if (!matches.length) return;
+    cursor = (cursor + delta + matches.length) % matches.length;
+    paint(true);
+  }
+
+  rows.forEach(function(row){
+    row.addEventListener('toggle', function(){
+      if (input.value.trim()) collectMatches();
+    });
+  });
+
+  prevBtn.addEventListener('click', function(){ step(-1); });
+  nextBtn.addEventListener('click', function(){ step(1); });
+  input.addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){
+      e.preventDefault();
+      step(e.shiftKey ? -1 : 1);
+    }
+  });
 
   input.addEventListener('input', update);
   document.getElementById('clearBtn').addEventListener('click', function(){
