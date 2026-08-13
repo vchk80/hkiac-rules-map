@@ -209,40 +209,47 @@ a.art.sch:hover{background:var(--sch);color:var(--on-accent);border-color:var(--
   gap:6px;min-width:0;}
 .cell.arts .reftxt{overflow:hidden;text-overflow:ellipsis;}
 .cell.arts .ext{margin-left:0;flex:none;}
-button.xref{font-family:Arial,Helvetica,sans-serif;font-size:10px;line-height:1;
+button.xref{font-family:var(--sans);font-size:.625rem;line-height:1;
   background:none;border:1px solid var(--accent-line);border-left:none;
   border-radius:0 2px 2px 0;color:var(--muted);padding:4px 5px;margin:0;display:none;
-  align-self:stretch;}
+  align-self:stretch;position:relative;scroll-margin-top:var(--stick);}
+/* drawn at 17px, which is under the 24px minimum target. Grows the hit area to
+   the right only, into the gap, so it never overlaps the chip it is welded to. */
+button.xref::before{content:"";position:absolute;inset:-1px -7px -1px 0;}
 body.js button.xref{display:inline-block;}
 button.xref:hover{background:var(--accent);color:var(--on-accent);border-color:var(--accent);}
+/* a schedule chip carries its button with it into the blue palette */
+.artgrp:has(.art.sch) button.xref{border-color:var(--sch-line);}
+.artgrp:has(.art.sch) button.xref:hover{background:var(--sch);color:var(--on-accent);border-color:var(--sch);}
 
 .tablehead{display:none;max-width:100%;background:var(--head-bg);color:var(--head-ink);
-  font-family:Arial,Helvetica,sans-serif;font-size:10.5px;font-weight:700;
+  font-family:var(--sans);font-size:.656rem;font-weight:700;
   letter-spacing:.13em;text-transform:uppercase;}
 .rows{border:1px solid var(--rule);background:var(--surface);overflow:hidden;}
-details.row{border-bottom:1px solid var(--rule);}
+details.row{border-bottom:1px solid var(--rule);scroll-margin-top:var(--stick);}
 details.row:last-child{border-bottom:none;}
-summary.rowhead{list-style:none;cursor:pointer;padding:14px 15px;display:block;}
+summary.rowhead{list-style:none;cursor:pointer;padding:14px 15px;display:block;
+  scroll-margin-top:var(--stick);}
 summary.rowhead::-webkit-details-marker{display:none;}
 summary.rowhead:hover,details.row[open] summary.rowhead{background:var(--surface-2);}
-.cell{margin-bottom:10px;font-size:15.5px;min-width:0;overflow-wrap:break-word;}
+.cell{margin-bottom:10px;font-size:.969rem;min-width:0;overflow-wrap:break-word;}
 .cell:last-child{margin-bottom:0;}
 .cell[data-lab]::before{content:attr(data-lab);display:block;
-  font-family:Arial,Helvetica,sans-serif;font-size:9.5px;letter-spacing:.12em;
+  font-family:var(--sans);font-size:.594rem;letter-spacing:.12em;
   text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
-.cat .n{font-family:"Courier New",Courier,monospace;font-size:11px;color:var(--muted);display:block;}
-.cat strong{font-weight:700;font-size:1.05rem;line-height:1.25;display:block;}
-.cat::after{content:"Tap to expand";font-family:Arial,Helvetica,sans-serif;font-size:9.5px;
+.cat .n{font-family:var(--mono);font-size:.688rem;color:var(--muted);display:block;}
+/* a real heading, so the 16 categories are reachable in a screen reader's
+   heading list; 19px puts the title a step above the body it heads */
+.cat h3{font:inherit;font-weight:700;font-size:1.1875rem;line-height:1.25;
+  margin:0;display:block;}
+.cat::after{content:"Show summary";font-family:var(--sans);font-size:.594rem;
   letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:block;margin-top:5px;}
-details.row[open] .cat::after{content:"Tap to collapse";}
-.covers{color:var(--ink-soft);}
-.time{color:var(--ink-soft);font-size:14.5px;}
-.time b{color:var(--ink);font-weight:700;}
+details.row[open] .cat::after{content:"Hide summary";}
 .rowbody{padding:2px 15px 18px;background:var(--surface-2);border-top:1px solid var(--rule);}
 .rowbody h4{margin:18px -15px 10px;padding:7px 15px 7px 12px;
-  font-size:12px;font-family:Arial,Helvetica,sans-serif;
+  font-size:.75rem;font-family:var(--sans);
   letter-spacing:.1em;text-transform:uppercase;
-  color:var(--accent);background:var(--accent-soft);
+  color:var(--ink-soft);background:transparent;
   border-left:3px solid var(--accent);}
 .rowbody h4:first-child{margin-top:8px;}
 .cols h4{break-after:avoid;}
