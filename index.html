@@ -800,28 +800,26 @@ footer a{color:var(--accent);}
   }
 
   /* ---- linked highlighting across the columns ---- */
-  rows.forEach(function(row){
-    var pinned = null;
-    var bar = row.querySelector('.pinbar');
-    var name = row.querySelector('.pinname');
+  rows.forEach(row => {
+    let pinned = null;
+    const bar = row.querySelector('.pinbar');
+    const name = row.querySelector('.pinname');
 
     function nodesFor(key){
-      var out = [];
-      row.querySelectorAll('[data-key="' + key + '"]').forEach(function(el){ out.push(el); });
-      row.querySelectorAll('.art[data-keys]').forEach(function(el){
-        var ks = (el.getAttribute('data-keys') || '').split(' ');
-        if (ks.indexOf(key) !== -1) out.push(el);
+      const out = [...row.querySelectorAll('[data-key="' + key + '"]')];
+      row.querySelectorAll('.art[data-keys]').forEach(el => {
+        if ((el.dataset.keys || '').split(' ').includes(key)) out.push(el);
       });
       return out;
     }
     function paintKey(key, on, cls){
-      nodesFor(key).forEach(function(el){ el.classList.toggle(cls, on); });
+      nodesFor(key).forEach(el => el.classList.toggle(cls, on));
     }
     function clearCls(cls){
-      row.querySelectorAll('.' + cls).forEach(function(el){ el.classList.remove(cls); });
+      row.querySelectorAll('.' + cls).forEach(el => el.classList.remove(cls));
     }
     function label(key){
-      var g = row.querySelector('.g[data-key="' + key + '"]');
+      const g = row.querySelector('.g[data-key="' + key + '"]');
       return g ? g.textContent : key;
     }
     function pin(key){
@@ -838,31 +836,30 @@ footer a{color:var(--accent);}
     }
 
     function keysOf(el){
-      if (el.hasAttribute('data-key')) return [el.getAttribute('data-key')];
-      var ks = el.getAttribute('data-keys');
-      return ks ? ks.split(' ') : [];
+      if (el.dataset.key) return [el.dataset.key];
+      return el.dataset.keys ? el.dataset.keys.split(' ') : [];
     }
 
-    row.querySelectorAll('[data-key], .art[data-keys]').forEach(function(el){
+    row.querySelectorAll('[data-key], .art[data-keys]').forEach(el => {
       if (el.classList.contains('sect')) return;   /* wrapper, not a control */
-      var ks = keysOf(el);
+      const ks = keysOf(el);
       if (!ks.length) return;
 
-      el.addEventListener('mouseenter', function(){
+      el.addEventListener('mouseenter', () => {
         if (pinned) return;
-        ks.forEach(function(k){ paintKey(k, true, 'linked'); });
+        ks.forEach(k => paintKey(k, true, 'linked'));
       });
-      el.addEventListener('mouseleave', function(){
+      el.addEventListener('mouseleave', () => {
         if (pinned) return;
-        ks.forEach(function(k){ paintKey(k, false, 'linked'); });
+        ks.forEach(k => paintKey(k, false, 'linked'));
       });
-      el.addEventListener('click', function(e){
+      el.addEventListener('click', e => {
         if (el.tagName === 'A') return;            /* chips keep their link */
         e.preventDefault();
         e.stopPropagation();                       /* do not toggle the row */
         pin(pinned === ks[0] ? null : ks[0]);
       });
-      el.addEventListener('keydown', function(e){
+      el.addEventListener('keydown', e => {
         if (e.key === 'Enter' || e.key === ' '){
           e.preventDefault(); e.stopPropagation();
           pin(pinned === ks[0] ? null : ks[0]);
@@ -870,10 +867,10 @@ footer a{color:var(--accent);}
       });
     });
 
-    bar.querySelector('.unpin').addEventListener('click', function(e){
+    bar.querySelector('.unpin').addEventListener('click', e => {
       e.preventDefault(); e.stopPropagation(); pin(null);
     });
-    bar.addEventListener('click', function(e){ e.stopPropagation(); });
+    bar.addEventListener('click', e => e.stopPropagation());
   });
 
   /* ---- jump between highlighted matches ---- */
