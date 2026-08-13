@@ -740,22 +740,22 @@ footer a{color:var(--accent);}
   }
 
   function update(){
-    var q = input.value.trim();
-    var ql = q.toLowerCase();
-    var tl = q ? terms(ql) : [];
-    var numeric = q ? looksNumeric(ql) : false;
-    var shown = 0, hits = 0;
+    const q = input.value.trim();
+    const ql = q.toLowerCase();
+    const tl = q ? terms(ql) : [];
+    const numeric = q ? looksNumeric(ql) : false;
+    let shown = 0;
 
     function has(text){ return !!q && textHas(text, tl, numeric); }
 
     clearMarks();
 
-    rows.forEach(function(row){
-      var head = row.querySelector('.rowhead');
-      var body = row.querySelector('.rowbody');
-      var inHead = !!ql && has(head.textContent.toLowerCase());
-      var inBody = !!ql && has(body.textContent.toLowerCase());
-      var ok = (!ql || inHead || inBody);
+    rows.forEach(row => {
+      const head = row.querySelector('.rowhead');
+      const body = row.querySelector('.rowbody');
+      const inHead = !!ql && has(head.textContent.toLowerCase());
+      const inBody = !!ql && has(body.textContent.toLowerCase());
+      const ok = (!ql || inHead || inBody);
       row.hidden = !ok;
       if (!ok) return;
       shown++;
