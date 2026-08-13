@@ -342,7 +342,8 @@ footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--rule);
 footer a{color:var(--accent);}
 
 @media (min-width:900px){
-  .tablehead{display:grid;grid-template-columns:var(--cols);gap:0;padding:11px 0;}
+  .tablehead{display:grid;grid-template-columns:var(--cols);gap:0;padding:11px 0;
+    position:sticky;top:var(--sticky-2,0px);z-index:25;}
   .tablehead > div{padding:0 16px;border-left:1px solid rgba(255,255,255,.18);}
   .tablehead > div:first-child{border-left:none;}
   summary.rowhead{display:grid;grid-template-columns:var(--cols);gap:0;align-items:stretch;padding:14px 0;}
@@ -356,16 +357,27 @@ footer a{color:var(--accent);}
   .pairs .g{border-top:1px solid var(--hair);padding-left:17px;}
   .pairs .g::before{left:0;}
   .pairs .d{border-left:2px solid var(--accent-line);border-top:none;
-    margin:0 0 4px 17px;padding:0 0 6px 10px;font-size:14px;}
+    margin:0 0 4px 17px;padding:0 0 6px 10px;font-size:.875rem;}
   .pairs .g:first-child{border-top:none;}
+}
+@media (max-width:820px){
+  .sec-head .seq-note{display:none;}
 }
 @media (max-width:640px){
   .wrap{padding:0 14px 60px;}
   header.mast{padding:26px 0 18px;}
   .sec-head .note{display:none;}
-  body{font-size:16px;}
+  body{font-size:1rem;}
+  .stage li{flex-direction:column;align-items:flex-start;}
+  .stage li .txt{flex:0 0 auto;align-self:stretch;}
+  /* auto-fill still finds room for two 120px tracks at 360px, which leaves the
+     chips too narrow to show a title. One track, so each chip gets full width. */
+  .cell.arts{grid-template-columns:1fr;}
 }
 @media print{
+  /* !important because the body.js rules that reveal these outrank a bare
+     class selector; matching their specificity here would tie the print
+     sheet to a class JavaScript sets */
   .controls,button.theme,button.xref,.nojs{display:none!important;}
   details.row{break-inside:avoid;}
   body{background:#fff;}
