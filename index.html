@@ -771,31 +771,30 @@ footer a{color:var(--accent);}
       }
     });
 
-    stages.forEach(function(s){
-      var any = false;
-      Array.prototype.forEach.call(s.querySelectorAll('li'), function(li){
-        var hit = (!ql || has(li.textContent.toLowerCase()));
+    stages.forEach(s => {
+      let any = false;
+      s.querySelectorAll('li').forEach(li => {
+        const hit = (!ql || has(li.textContent.toLowerCase()));
         li.hidden = !hit;
         if (hit){
           any = true;
-          var t = li.querySelector('.txt');
-          if (q && t) hits += mark(t, tl, numeric);
+          const t = li.querySelector('.txt');
+          if (q && t) mark(t, tl, numeric);
         }
       });
       s.hidden = !any;
     });
 
-    Array.prototype.forEach.call(document.querySelectorAll('.art'), function(chip){
-      var ref = (chip.getAttribute('data-ref') || '').toLowerCase();
-      var on = !!q && has(ref);
-      chip.classList.toggle('hit', on);
-      if (on) hits++;
+    document.querySelectorAll('.art').forEach(chip => {
+      const ref = (chip.dataset.ref || '').toLowerCase();
+      chip.classList.toggle('hit', !!q && has(ref));
     });
 
+    clearBtn.hidden = !q;
     empty.style.display = shown === 0 ? 'block' : 'none';
-    if (!ql) count.textContent = rows.length + ' categories';
-    else count.textContent = shown + ' of ' + rows.length + ' categories';
-    void hits;
+    /* role="status", so it stays in the DOM and swaps its text. Toggling hidden
+       here would stop a screen reader announcing the result at all. */
+    count.textContent = ql ? shown + ' of ' + rows.length + ' categories' : '';
 
     collectMatches();
   }
