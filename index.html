@@ -874,26 +874,36 @@ footer a{color:var(--accent);}
   });
 
   /* ---- jump between highlighted matches ---- */
-  var matches = [], cursor = -1;
+  let matches = [], cursor = -1;
 
   function collectMatches(){
-    matches = Array.prototype.slice.call(document.querySelectorAll('mark, .art.hit'))
-      .filter(function(m){ return m.offsetParent !== null; });
+    matches = [...document.querySelectorAll('mark, .art.hit')]
+      .filter(m => m.offsetParent !== null);
     cursor = matches.length ? 0 : -1;
-    nav.hidden = matches.length === 0;
-    prevBtn.disabled = nextBtn.disabled = matches.length < 1;
+    prevBtn.disabled = nextBtn.disabled = matches.length === 0;
     paint(false);
   }
 
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
   function paint(scroll){
-    matches.forEach(function(m, i){ m.classList.toggle('current', i === cursor); });
-    if (cursor >= 0 && matches[cursor]) matches[cursor].setAttribute('aria-current', 'true');
+    /* clear document-wide, not just across `matches`: collectMatches keeps only
+       the visible elements, so a chip whose row has since closed has already
+       dropped out of the list and would keep its marker forever */
+    document.querySelectorAll('.current, [aria-current]').forEach(el => {
+      el.classList.remove('current');
+      el.removeAttribute('aria-current');
+    });
+    if (cursor >= 0 && matches[cursor]){
+      matches[cursor].classList.add('current');
+      matches[cursor].setAttribute('aria-current', 'true');
+    }
     navCount.textContent = (matches.length ? (cursor + 1) : 0) + '/' + matches.length;
     if (scroll && cursor >= 0){
-      var el = matches[cursor];
-      var row = el.closest ? el.closest('details.row') : null;
+      const el = matches[cursor];
+      const row = el.closest ? el.closest('details.row') : null;
       if (row && !row.open) row.open = true;
-      el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      el.scrollIntoView({ block: 'center', behavior: reduceMotion.matches ? 'auto' : 'smooth' });
     }
   }
 
