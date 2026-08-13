@@ -632,30 +632,35 @@ footer a{color:var(--accent);}
 </div>
 <script>
 (function(){
+  'use strict';
   document.body.classList.add('js');
 
-  var input = document.getElementById('filter');
-  var rows = Array.prototype.slice.call(document.querySelectorAll('details.row'));
-  var stages = Array.prototype.slice.call(document.querySelectorAll('.stage'));
-  var count = document.getElementById('count');
-  var empty = document.getElementById('empty');
+  const input = document.getElementById('filter');
+  const rows = [...document.querySelectorAll('details.row')];
+  const stages = [...document.querySelectorAll('.stage')];
+  const count = document.getElementById('count');
+  const empty = document.getElementById('empty');
+  const clearBtn = document.getElementById('clearBtn');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const navCount = document.getElementById('navCount');
 
   /* add a cross-reference button beside every article chip */
-  Array.prototype.forEach.call(document.querySelectorAll('.art'), function(chip){
-    var ref = chip.getAttribute('data-ref') || chip.textContent.trim();
-    var b = document.createElement('button');
+  document.querySelectorAll('.art').forEach(chip => {
+    const ref = chip.dataset.ref || chip.textContent.trim();
+    const b = document.createElement('button');
     b.type = 'button';
     b.className = 'xref';
     b.textContent = '\u2315';
     b.title = 'Find every mention of ' + ref;
-    b.addEventListener('click', function(e){
+    b.addEventListener('click', e => {
       e.preventDefault();
       e.stopPropagation();
       input.value = ref.replace(/^Art\.?\s*/i,'').replace(/\s*\u00B6.*$/,'');
       update();
       window.scrollTo(0,0);
     });
-    var grp = chip.closest('.artgrp') || chip.parentNode;
+    const grp = chip.closest('.artgrp') || chip.parentNode;
     grp.appendChild(b);
   });
 
