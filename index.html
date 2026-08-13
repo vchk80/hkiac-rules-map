@@ -114,34 +114,46 @@ a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{o
 body.js .controls::before{content:"";position:absolute;top:0;bottom:-1px;left:-50vw;right:-50vw;
   background:var(--bg);border-bottom:1px solid var(--rule);z-index:-1;}
 body.js .controls{display:block;}
-.searchrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:9px;}
-input[type="search"]{flex:1 1 230px;min-width:0;font-family:"Times New Roman",Times,serif;
-  font-size:16px;padding:10px 12px;border:1px solid var(--rule);border-radius:2px;
+.searchrow{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin-bottom:9px;}
+.searchfield{position:relative;display:flex;flex:1 1 230px;min-width:0;}
+/* a class rule with display:flex outranks the UA stylesheet's [hidden] */
+.clearx[hidden]{display:none;}
+/* max(), not a bare rem: 16px is the floor below which iOS Safari zooms the page
+   on focus, but a reader who has raised their default size still gets the lift */
+input[type="search"]{flex:1 1 auto;min-width:0;font-family:var(--serif);
+  font-size:max(1rem,16px);padding:10px 38px 10px 12px;border:1px solid var(--rule);border-radius:2px;
   background:var(--surface);color:var(--ink);}
+input[type="search"]::-webkit-search-cancel-button{-webkit-appearance:none;}
 .nav{display:inline-flex;align-items:stretch;border:1px solid var(--rule);
   border-radius:2px;background:var(--surface);overflow:hidden;flex:none;}
-.navbtn{font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:1;
+.navbtn{font-family:var(--sans);font-size:.813rem;line-height:1;
   background:none;border:none;color:var(--ink-soft);padding:0 11px;}
 .navbtn:hover:not(:disabled){background:var(--accent);color:var(--on-accent);}
 .navbtn:disabled{color:var(--muted);opacity:.4;cursor:default;}
-.navcount{display:flex;align-items:center;padding:0 9px;color:var(--muted);
+.navcount{display:flex;align-items:center;padding:0 8px;color:var(--muted);
   border-left:1px solid var(--rule);border-right:1px solid var(--rule);
-  font-size:10.5px;white-space:nowrap;min-width:54px;justify-content:center;}
-.clearbtn{font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:.08em;
-  text-transform:uppercase;background:none;border:1px solid var(--rule);border-radius:2px;
-  color:var(--muted);padding:9px 11px;}
-.clearbtn:hover{color:var(--accent);border-color:var(--accent);}
-.count{color:var(--muted);flex:1 0 100%;order:3;margin-top:2px;}
-@media (min-width:720px){.count{flex:0 0 auto;order:0;margin-top:0;white-space:nowrap;}}
+  font-size:.656rem;white-space:nowrap;justify-content:center;
+  font-variant-numeric:tabular-nums;width:72px;}
+.clearx{position:absolute;right:1px;top:1px;bottom:1px;width:34px;
+  display:flex;align-items:center;justify-content:center;
+  background:none;border:none;border-radius:0 2px 2px 0;
+  color:var(--muted);font-size:1.125rem;line-height:1;}
+.clearx:hover{color:var(--accent);}
+.count{color:var(--muted);margin:10px 0 0;}
 
 .nojs{background:var(--accent-soft);border:1px solid var(--accent-line);
-  padding:12px 14px;margin:20px 0 0;font-size:14.5px;color:var(--ink-soft);}
+  padding:12px 14px;margin:20px 0 0;font-size:.906rem;color:var(--ink-soft);}
 body.js .nojs{display:none;}
 
-.sec-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin:40px 0 16px;
-  padding-bottom:8px;border-bottom:2px solid var(--ink);}
+/* sticks under the search bar; --sticky-1 and --sticky-2 are measured in JS
+   because the controls change height when they wrap on narrow screens */
+.sec-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin:40px 0 0;
+  padding-bottom:8px;border-bottom:2px solid var(--ink);
+  position:sticky;top:var(--sticky-1,0px);z-index:20;background:var(--bg);
+  box-shadow:0 16px 0 var(--bg);}
+.sec-head + *{margin-top:16px;}
 .sec-head h2{font-weight:700;font-size:1.35rem;margin:0;}
-.sec-head .note{color:var(--muted);margin-left:auto;font-size:13px;}
+.sec-head .note{color:var(--muted);margin-left:auto;font-size:.813rem;}
 
 .spine{position:relative;padding-left:28px;}
 .spine::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:1px;background:var(--rule);}
