@@ -665,18 +665,18 @@ footer a{color:var(--accent);}
   });
 
   function clearMarks(){
-    Array.prototype.forEach.call(document.querySelectorAll('mark'), function(m){
-      var p = m.parentNode;
+    document.querySelectorAll('mark').forEach(m => {
+      const p = m.parentNode;
       p.replaceChild(document.createTextNode(m.textContent), m);
       p.normalize();
     });
   }
   /* "schedule 4" should also find "Sch 4"; "article 27" should find "Art 27" */
   function terms(q){
-    var out = [q];
-    var m = q.match(/^schedules? *([0-9]+)/i);
+    const out = [q];
+    const m = q.match(/^schedules? *([0-9]+)/i);
     if (m) out.push('sch ' + m[1]);
-    var a = q.match(/^articles? +(.+)$/i);
+    const a = q.match(/^articles? +(.+)$/i);
     if (a) out.push('art ' + a[1]);
     if (/^schedules?$/i.test(q)) out.push('sch ');
     if (/^articles?$/i.test(q)) out.push('art ');
@@ -689,17 +689,16 @@ footer a{color:var(--accent);}
      match inside 41.4, but should still match 1.4 and 1.41. */
   function okBoundary(text, at, numeric){
     if (!numeric || at === 0) return true;
-    var prev = text.charAt(at - 1);
+    const prev = text.charAt(at - 1);
     return !(prev >= '0' && prev <= '9') && prev !== '.';
   }
 
   /* Finds the earliest occurrence of any term at or after `from`. */
   function findNext(text, tl, numeric, from){
-    var best = -1, bestLen = 0;
-    for (var i = 0; i < tl.length; i++){
-      var t = tl[i];
+    let best = -1, bestLen = 0;
+    for (const t of tl){
       if (!t) continue;
-      var at = from;
+      let at = from;
       while (true){
         at = text.indexOf(t, at);
         if (at === -1) break;
@@ -718,26 +717,26 @@ footer a{color:var(--accent);}
   }
 
   function mark(root, tl, numeric){
-    var hits = 0, nodes = [], n;
-    var w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+    const nodes = [];
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null, false);
+    let n;
     while ((n = w.nextNode())) nodes.push(n);
-    nodes.forEach(function(node){
-      var raw = node.nodeValue;
-      var low = raw.toLowerCase();
+    nodes.forEach(node => {
+      const raw = node.nodeValue;
+      const low = raw.toLowerCase();
       if (!textHas(low, tl, numeric)) return;
-      var frag = document.createDocumentFragment(), last = 0, hit;
+      const frag = document.createDocumentFragment();
+      let last = 0, hit;
       while ((hit = findNext(low, tl, numeric, last)) !== null){
         if (hit.at > last) frag.appendChild(document.createTextNode(raw.slice(last, hit.at)));
-        var el = document.createElement('mark');
-        el.textContent = raw.substr(hit.at, hit.len);
+        const el = document.createElement('mark');
+        el.textContent = raw.slice(hit.at, hit.at + hit.len);
         frag.appendChild(el);
         last = hit.at + hit.len;
-        hits++;
       }
       if (last < raw.length) frag.appendChild(document.createTextNode(raw.slice(last)));
       node.parentNode.replaceChild(frag, node);
     });
-    return hits;
   }
 
   function update(){
