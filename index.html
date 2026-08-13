@@ -761,15 +761,13 @@ footer a{color:var(--accent);}
       shown++;
       if (ql) row.open = inBody;
       if (q){
-        ['.cat strong','.covers','.time'].forEach(function(sel){
-          var el = head.querySelector(sel);
-          if (el) hits += mark(el, tl, numeric);
-        });
+        /* querySelectorAll, not querySelector: a row now holds several paired
+           items, and marking only the first would leave the rest unhighlighted */
+        head.querySelectorAll('.cat h3, .pairs .g, .pairs .d')
+          .forEach(el => mark(el, tl, numeric));
         /* mark the body whether or not it is open; hidden marks are filtered
            out of the jump list until the row is expanded */
-        Array.prototype.forEach.call(body.querySelectorAll('li, h4'), function(el){
-          hits += mark(el, tl, numeric);
-        });
+        body.querySelectorAll('li, h4').forEach(el => mark(el, tl, numeric));
       }
     });
 
