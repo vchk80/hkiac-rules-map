@@ -13,6 +13,7 @@
   --head-bg:#22403F; --head-ink:#F1F5F3;
   --on-accent:#FFFFFF; --mark:#FBF3B8; --mark-ink:#182226;
   --sch:#3B5578; --sch-soft:#E7ECF3; --sch-line:#C3D0E1;
+  --ring-face:#FFFFFF; --ring-ink:#2E5E5A;
 }
 @media (prefers-color-scheme: dark){
   :root{
@@ -23,6 +24,7 @@
     --head-bg:#1B2C2C; --head-ink:#DCE7E4;
     --on-accent:#0E1517; --mark:#6E6230; --mark-ink:#F6F1DC;
     --sch:#9DB6D8; --sch-soft:#1A2431; --sch-line:#35465F;
+  --ring-face:#E9EFEC; --ring-ink:#12211F;
   }
 }
 :root[data-theme="light"]{
@@ -33,6 +35,7 @@
   --head-bg:#22403F; --head-ink:#F1F5F3;
   --on-accent:#FFFFFF; --mark:#FBF3B8; --mark-ink:#182226;
   --sch:#3B5578; --sch-soft:#E7ECF3; --sch-line:#C3D0E1;
+  --ring-face:#FFFFFF; --ring-ink:#2E5E5A;
 }
 :root[data-theme="dark"]{
   --bg:#0E1517; --surface:#161F22; --surface-2:#1C282B;
@@ -42,6 +45,7 @@
   --head-bg:#1B2C2C; --head-ink:#DCE7E4;
   --on-accent:#0E1517; --mark:#6E6230; --mark-ink:#F6F1DC;
   --sch:#9DB6D8; --sch-soft:#1A2431; --sch-line:#35465F;
+  --ring-face:#E9EFEC; --ring-ink:#12211F;
 }
 *{box-sizing:border-box;}
 :root{--cols:minmax(0,21fr) minmax(0,24fr) minmax(0,33fr) minmax(0,22fr);}
@@ -183,8 +187,13 @@ details.row[open] .cat::after{content:"Tap to collapse";}
 .time{color:var(--ink-soft);font-size:14.5px;}
 .time b{color:var(--ink);font-weight:700;}
 .rowbody{padding:2px 15px 18px;background:var(--surface-2);border-top:1px solid var(--rule);}
-.rowbody h4{margin:14px 0 7px;font-size:12px;font-family:Arial,Helvetica,sans-serif;
-  letter-spacing:.1em;text-transform:uppercase;color:var(--accent);}
+.rowbody h4{margin:18px -15px 10px;padding:7px 15px 7px 12px;
+  font-size:12px;font-family:Arial,Helvetica,sans-serif;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);background:var(--accent-soft);
+  border-left:3px solid var(--accent);}
+.rowbody h4:first-child{margin-top:8px;}
+.cols h4{break-after:avoid;}
 .rowbody ul{margin:0;padding-left:20px;}
 .rowbody li{margin-bottom:6px;color:var(--ink-soft);font-size:15px;}
 .rowbody h4.seqhead{color:var(--accent);}
@@ -195,7 +204,8 @@ ol.seq li{counter-increment:step;position:relative;margin-bottom:9px;padding-lef
 ol.seq li::before{
   content:counter(step);position:absolute;left:-30px;top:1px;
   width:19px;height:19px;border-radius:50%;
-  background:var(--surface-2);border:1px solid var(--accent);color:var(--accent);
+  background:var(--ring-face);border:1px solid var(--accent);color:var(--ring-ink);
+  box-shadow:0 1px 2px rgba(24,34,38,.10);
   font-family:Arial,Helvetica,sans-serif;font-size:10.5px;font-weight:700;
   display:flex;align-items:center;justify-content:center;}
 ol.seq li:last-child{margin-bottom:0;}
