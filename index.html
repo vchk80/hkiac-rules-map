@@ -323,19 +323,22 @@ mark.current{outline:2px solid var(--accent);outline-offset:1px;font-weight:700;
   align-items:stretch;}
 @media (max-width:820px){.handoffwrap{grid-template-columns:1fr;}}
 .handoff{padding:12px 14px;border-left:2px solid var(--accent);margin:0;
-  background:var(--surface);color:var(--ink-soft);font-size:14.5px;}
+  background:var(--surface);color:var(--ink-soft);font-size:.906rem;}
 .handoff .label{display:block;color:var(--accent);margin-bottom:4px;}
 .howto{margin:0;padding:12px 14px;background:var(--accent-soft);color:var(--ink-soft);
-  font-size:14.5px;border-left:2px solid var(--accent);}
+  font-size:.906rem;border-left:2px solid var(--accent);}
 .howto .label{display:block;color:var(--accent);margin-bottom:4px;}
-.empty{display:none;padding:34px 16px;text-align:center;color:var(--muted);font-size:15px;}
+.empty{display:none;padding:34px 16px;text-align:center;color:var(--muted);font-size:.938rem;}
 
-.callout{margin-top:36px;border-left:3px solid var(--accent);background:var(--surface);padding:18px 20px;}
-.callout h3{font-weight:700;font-size:1.08rem;margin:0 0 8px;}
-.callout p{margin:0 0 9px;color:var(--ink-soft);font-size:15.5px;max-width:74ch;}
+/* fit-content, not a fixed max-width: the panel then hugs whatever the 74ch
+   paragraph cap below resolves to, instead of stretching the full 1180px */
+.callout{margin-top:36px;border-left:3px solid var(--accent);background:var(--surface);
+  padding:18px 20px;width:fit-content;max-width:100%;}
+.callout h3{font-weight:700;font-size:1.1875rem;margin:0 0 8px;}
+.callout p{margin:0 0 9px;color:var(--ink-soft);font-size:.969rem;max-width:74ch;}
 .callout p:last-child{margin-bottom:0;}
 footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--rule);
-  font-size:13.5px;color:var(--muted);max-width:74ch;}
+  font-size:.844rem;color:var(--muted);max-width:74ch;}
 footer a{color:var(--accent);}
 
 @media (min-width:900px){
