@@ -385,28 +385,35 @@ footer a{color:var(--accent);}
 </style>
 </head>
 <body>
+<a class="skip" href="#content">Skip to content</a>
 <div class="wrap">
 
   <header class="mast">
     <div class="topline">
       <p class="eyebrow label">Reference map · effective 1 June 2024</p>
-      <button class="theme" id="themeBtn" type="button">Dark mode</button>
     </div>
     <h1>2024 HKIAC Administered Arbitration Rules <span>by category</span></h1>
     <p class="standfirst">Below is an interactive display of every Article &amp; Schedule, sorted into working categories, with added deadlines, triggers and expandable summaries. Commencement of the arbitration is shown as a sequence, whilst everything else is a lookup. To refer to the original HKIAC 2024 Rules, please tap/click on the article number. You can also tap on each category to expand the section into written notes.</p>
-    <div class="meta label"><span>46 Articles</span><span>4 Schedules</span><span>17 categories</span><span>Seat: Hong Kong by default</span></div>
+    <div class="meta label"><span>46 Articles</span><span>4 Schedules</span><span>16 categories + 1 sequence</span><span>Default seat: Hong Kong</span></div>
   </header>
+
+  <main id="content">
 
   <div class="controls">
     <div class="searchrow">
-      <input type="search" id="filter" placeholder="Search, e.g. joinder, deposit, 27.6" aria-label="Search">
-      <span class="nav" id="nav" hidden>
+      <span class="searchfield">
+        <input type="search" id="filter" placeholder="Search, e.g. joinder, deposit, 27.6" aria-label="Search">
+        <button class="clearx" id="clearBtn" type="button" hidden aria-label="Clear search and collapse all" title="Clear search and collapse all">&times;</button>
+      </span>
+      <span class="nav">
         <button class="navbtn" id="prevBtn" type="button" aria-label="Previous match" title="Previous match">↑</button>
-        <span class="navcount label" id="navCount">0/0</span>
+        <span class="navcount label" id="navCount" aria-live="polite" aria-atomic="true">0/0</span>
         <button class="navbtn" id="nextBtn" type="button" aria-label="Next match" title="Next match">↓</button>
       </span>
-      <button class="clearbtn" id="clearBtn" type="button">Clear</button>
-      <span class="count label" id="count"></span>
+      <button class="theme" id="themeBtn" type="button">
+        <span class="theme-dark">Dark mode</span>
+        <span class="theme-light">Light mode</span>
+      </button>
     </div>
   </div>
 
