@@ -271,22 +271,24 @@ ol.seq li:last-child{margin-bottom:0;}
 ol.seq b{color:var(--ink);font-weight:700;}
 .cols ol.seq{break-inside:avoid;}
 
-/* ---- paired items: each row shares one grid line ---- */
+/* ---- paired items: each item and its deadline share one grid line ---- */
 .cell.pairs{display:grid;grid-template-columns:var(--pairs);
-  column-gap:0;align-items:stretch;font-size:15px;padding:0;}
+  column-gap:0;align-items:stretch;font-size:.938rem;padding:0;}
 .pairs .g,.pairs .d{padding:6px 15px;border-top:1px solid var(--hair);
   display:block;line-height:1.5;}
 .pairs .g:nth-child(1),.pairs .d:nth-child(2){border-top:none;}
 .pairs .g{color:var(--ink);position:relative;padding-left:32px;}
 .pairs .g::before{content:"✳";position:absolute;left:15px;top:7px;color:var(--accent);
-  font-family:Arial,Helvetica,sans-serif;font-size:10px;}
-.pairs .d{color:var(--ink-soft);font-size:14.5px;border-left:1px solid var(--hair);}
+  font-family:var(--sans);font-size:.625rem;}
+/* carries what the deadlines column used to hold, so it keeps its numerals */
+.pairs .d{color:var(--ink-soft);font-size:.906rem;border-left:1px solid var(--hair);
+  font-variant-numeric:tabular-nums;}
 .pairs .d b{color:var(--ink);font-weight:700;}
 .pairhead{display:grid;grid-template-columns:var(--pairs);padding:0!important;
   border-left:1px solid rgba(255,255,255,.18);}
 .pairhead > span{padding:0 15px;}
 .pairhead > span + span{border-left:1px solid rgba(255,255,255,.18);}
-.linkable{cursor:default;border-radius:2px;scroll-margin-top:110px;}
+.linkable{cursor:default;border-radius:2px;scroll-margin-top:var(--stick);}
 body.js .linkable{cursor:pointer;}
 
 .linked{background:var(--link-wash);
@@ -305,16 +307,16 @@ h4.seqhead.linked::after{color:var(--on-accent);}
 
 .pinbar{display:none;align-items:center;gap:10px;flex-wrap:wrap;
   padding:8px 15px;background:var(--accent-soft);
-  border-top:1px solid var(--accent-line);font-size:13.5px;color:var(--ink-soft);}
+  border-top:1px solid var(--accent-line);font-size:.844rem;color:var(--ink-soft);}
 .pinbar.on{display:flex;}
 .pinbar b{color:var(--ink);}
-.pinbar button{font-family:Arial,Helvetica,sans-serif;font-size:10px;letter-spacing:.08em;
+.pinbar button{font-family:var(--sans);font-size:.625rem;letter-spacing:.08em;
   text-transform:uppercase;background:var(--surface);border:1px solid var(--rule);
-  border-radius:2px;color:var(--muted);padding:4px 8px;cursor:pointer;}
+  border-radius:2px;color:var(--muted);padding:4px 8px;}
 .pinbar button:hover{color:var(--accent);border-color:var(--accent);}
 
 mark{background:var(--mark);color:var(--mark-ink);padding:0 1px;border-radius:2px;
-  scroll-margin-top:110px;}
+  scroll-margin-top:var(--stick);}
 mark.current{outline:2px solid var(--accent);outline-offset:1px;font-weight:700;}
 
 .handoffwrap{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:6px 0 0 30px;
